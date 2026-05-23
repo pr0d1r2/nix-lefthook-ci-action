@@ -1,5 +1,7 @@
 # nix-lefthook-ci-action
 
+[![CI](https://github.com/pr0d1r2/nix-lefthook-ci-action/actions/workflows/ci.yml/badge.svg)](https://github.com/pr0d1r2/nix-lefthook-ci-action/actions/workflows/ci.yml)
+
 Composite GitHub Action for Nix + lefthook CI.
 Pin by commit SHA for deterministic, reproducible builds.
 
