@@ -9,6 +9,11 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
+    nix-lefthook = {
+      url = "github:pr0d1r2/nix-lefthook";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nix-lefthook-git-conflict-markers-src = {
       url = "github:pr0d1r2/nix-lefthook-git-conflict-markers";
       flake = false;
@@ -62,6 +67,7 @@
   outputs =
     {
       nixpkgs,
+      nix-lefthook,
       nix-lefthook-git-conflict-markers-src,
       nix-lefthook-git-no-local-paths-src,
       nix-lefthook-markdownlint-src,
@@ -143,7 +149,7 @@
       ciPackages =
         pkgs:
         [
-          pkgs.lefthook
+          nix-lefthook.packages.${pkgs.system}.default
           pkgs.git
           pkgs.nix
         ]
