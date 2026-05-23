@@ -145,6 +145,7 @@
         [
           pkgs.lefthook
           pkgs.git
+          pkgs.nix
         ]
         ++ lefthookWrappers pkgs;
     in
