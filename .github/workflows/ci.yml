@@ -27,3 +27,7 @@ jobs:
           assert action['runs']['using'] == 'composite', 'Expected composite action'
           print('All required fields present')
           "
+
+      - uses: DavidAnson/markdownlint-cli2-action@05f32210e84442804257b2a6f20b273450ec8265
+        with:
+          globs: "*.md"
