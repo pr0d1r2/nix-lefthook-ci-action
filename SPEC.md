@@ -69,13 +69,13 @@ Composite GitHub Action for Nix + lefthook CI. One-line drop-in for repos using 
 | T2 | x | SHA-pin all action dependencies (checkout, install-nix-action, cachix-action, markdownlint-cli2-action) | C2 |
 | T3 | x | input parameters for all variation axes including `devshell`, `skip-build`, `cachix-cache` | I.inputs,V9,V10,V11,V12,V17 |
 | T4 | x | isolated nix develop with --ignore-environment | V7,V8,C6 |
-| T6 | | standalone flake.nix with `default` + `ci` devShells (lefthook + all hook tools, no nix-dev-shell-agentic) | V15,V18,V18b,C7,I.flake |
+| T6 | x | standalone flake.nix with `default` + `ci` devShells (lefthook + all hook tools, no nix-dev-shell-agentic) | V15,V18,V18b,C7,I.flake |
 | T7 | x | README with usage examples + pinning guidance | C4,C2 |
 | T8 | x | branch protection requiring PRs | C8 |
 | T9 | | test action on consumer repo (nix-lefthook-ascii-only PR) | C4 |
 | T10 | | roll out to all 50+ nix-lefthook-* repos | C2,C4 |
-| T11 | | lefthook.yml with remote hooks for repo file types (.yml, .md, .nix) | V14,V19,V20,I.lefthook |
-| T12 | | self-CI dogfood: replace standalone actions with `uses: ./` + `skip-build: true` | V13,C9,I.ci |
+| T11 | x | lefthook.yml with remote hooks for repo file types (.yml, .md, .nix) | V14,V19,V20,I.lefthook |
+| T12 | x | self-CI dogfood: replace standalone actions with `uses: ./` + `skip-build: true` | V13,C9,I.ci |
 
 ## §B Bugs
 

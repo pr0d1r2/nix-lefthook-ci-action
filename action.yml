@@ -1,3 +1,4 @@
+---
 name: Nix Lefthook CI
 description: Build and run lefthook checks in a Nix devShell
 
