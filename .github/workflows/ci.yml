@@ -1,0 +1,29 @@
+---
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Validate action.yml syntax
+        run: python3 -c "import yaml, sys; yaml.safe_load(open('action.yml')); print('action.yml: valid YAML')"
+
+      - name: Check required action fields
+        run: |
+          python3 -c "
+          import yaml, sys
+          action = yaml.safe_load(open('action.yml'))
+          for field in ['name', 'description', 'inputs', 'runs']:
+              assert field in action, f'Missing required field: {field}'
+          assert action['runs']['using'] == 'composite', 'Expected composite action'
+          print('All required fields present')
+          "
