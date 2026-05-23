@@ -56,10 +56,10 @@ Composite GitHub Action for Nix + lefthook CI. One-line drop-in for repos using 
 
 | id | status | task | cites |
 |----|--------|------|-------|
-| T1 | | composite action with checkout + cachix + nix install + build + lefthook install + pre-commit + pre-push | V1,V1b,V2,V3,V4,V5,V6,V6b,I.action |
-| T2 | | SHA-pin all action dependencies (checkout, install-nix-action, cachix-action, markdownlint-cli2-action) | C2 |
-| T3 | | input parameters for all variation axes including `devshell`, `skip-build`, `cachix-cache` | I.inputs,V9,V10,V11,V12,V17 |
-| T4 | | isolated nix develop with --ignore-environment | V7,V8,C6 |
+| T1 | x | composite action with checkout + cachix + nix install + build + lefthook install + pre-commit + pre-push | V1,V1b,V2,V3,V4,V5,V6,V6b,I.action |
+| T2 | x | SHA-pin all action dependencies (checkout, install-nix-action, cachix-action, markdownlint-cli2-action) | C2 |
+| T3 | x | input parameters for all variation axes including `devshell`, `skip-build`, `cachix-cache` | I.inputs,V9,V10,V11,V12,V17 |
+| T4 | x | isolated nix develop with --ignore-environment | V7,V8,C6 |
 | T6 | x | self-CI: action.yml validation + markdownlint | V13,V14,V15,C7,I.ci |
 | T7 | x | README with usage examples + pinning guidance | C4,C2 |
 | T8 | x | branch protection requiring PRs | C8 |
