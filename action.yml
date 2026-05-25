@@ -1,3 +1,4 @@
+---
 name: Nix Lefthook CI
 description: Build and run lefthook checks in a Nix devShell
 
@@ -26,14 +27,34 @@ inputs:
     description: Skip pre-commit stage (run only pre-push)
     required: false
     default: "false"
+  devshell:
+    description: Nix devShell to use (e.g. ci, checks)
+    required: false
+    default: "ci"
+  skip-build:
+    description: Skip nix build step (for repos with no default package)
+    required: false
+    default: "false"
+  cachix-cache:
+    description: Cachix cache name for nix store caching (empty string disables)
+    required: false
+    default: "pr0d1r2"
 
 runs:
   using: composite
   steps:
-    - uses: cachix/install-nix-action@v31
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+    - uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3
       with:
         extra_nix_config: |
           experimental-features = nix-command flakes
+
+    - name: Set up cachix
+      if: inputs.cachix-cache != ''
+      uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc
+      with:
+        name: ${{ inputs.cachix-cache }}
 
     - name: Pre-build commands
       if: inputs.pre-build-commands != ''
@@ -41,6 +62,7 @@ runs:
       run: ${{ inputs.pre-build-commands }}
 
     - name: Build
+      if: inputs.skip-build != 'true'
       shell: bash
       run: nix build ${{ inputs.accept-flake-config == 'true' && '--accept-flake-config' || '' }}
 
@@ -49,7 +71,7 @@ runs:
       run: |
         TERM=dumb nix develop \
           ${{ inputs.accept-flake-config == 'true' && '--accept-flake-config' || '' }} \
-          .#ci --ignore-environment --keep TERM \
+          .#${{ inputs.devshell }} --ignore-environment --keep TERM \
           --command lefthook install
 
     - name: Pre-commit checks
@@ -58,17 +80,17 @@ runs:
       run: |
         TERM=dumb nix develop \
           ${{ inputs.accept-flake-config == 'true' && '--accept-flake-config' || '' }} \
-          .#ci --ignore-environment --keep TERM \
+          .#${{ inputs.devshell }} --ignore-environment --keep TERM \
           ${{ inputs.keep-home == 'true' && '--keep HOME' || '' }} \
           --command bash -c \
-          '${{ inputs.extra-env }} ${{ inputs.flake-check-timeout != '' && format('LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT={0}', inputs.flake-check-timeout) || '' }} lefthook run pre-commit --all-files'
+          '${{ inputs.keep-home == 'true' && 'mkdir -p "$HOME/.parallel" && touch "$HOME/.parallel/will-cite";' || '' }} ${{ inputs.extra-env }} ${{ inputs.flake-check-timeout != '' && format('LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT={0}', inputs.flake-check-timeout) || '' }} lefthook run pre-commit --all-files'
 
     - name: Pre-push checks
       shell: bash
       run: |
         TERM=dumb nix develop \
           ${{ inputs.accept-flake-config == 'true' && '--accept-flake-config' || '' }} \
-          .#ci --ignore-environment --keep TERM \
+          .#${{ inputs.devshell }} --ignore-environment --keep TERM \
           ${{ inputs.keep-home == 'true' && '--keep HOME' || '' }} \
           --command bash -c \
           '${{ inputs.keep-home == 'true' && 'mkdir -p "$HOME/.parallel" && touch "$HOME/.parallel/will-cite";' || '' }} ${{ inputs.extra-env }} ${{ inputs.flake-check-timeout != '' && format('LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT={0}', inputs.flake-check-timeout) || '' }} lefthook run pre-push --all-files'
