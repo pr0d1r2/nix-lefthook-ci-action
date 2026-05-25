@@ -39,6 +39,14 @@ inputs:
     description: Cachix cache name for nix store caching (empty string disables)
     required: false
     default: "pr0d1r2"
+  cachix-auth-token:
+    description: Cachix auth token for pushing to cache (empty = read-only)
+    required: false
+    default: ""
+  skip-lefthook:
+    description: Skip all lefthook steps (install, pre-commit, pre-push) for build-only jobs
+    required: false
+    default: "false"
 
 runs:
   using: composite
@@ -55,6 +63,7 @@ runs:
       uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc
       with:
         name: ${{ inputs.cachix-cache }}
+        authToken: ${{ inputs.cachix-auth-token || '' }}
 
     - name: Pre-build commands
       if: inputs.pre-build-commands != ''
@@ -67,6 +76,7 @@ runs:
       run: nix build ${{ inputs.accept-flake-config == 'true' && '--accept-flake-config' || '' }}
 
     - name: Install lefthook remotes
+      if: inputs.skip-lefthook != 'true'
       shell: bash
       run: |
         TERM=dumb nix develop \
@@ -75,7 +85,7 @@ runs:
           --command lefthook install
 
     - name: Pre-commit checks
-      if: inputs.skip-pre-commit != 'true'
+      if: inputs.skip-lefthook != 'true' && inputs.skip-pre-commit != 'true'
       shell: bash
       run: |
         TERM=dumb nix develop \
@@ -86,6 +96,7 @@ runs:
           '${{ inputs.keep-home == 'true' && 'mkdir -p "$HOME/.parallel" && touch "$HOME/.parallel/will-cite";' || '' }} ${{ inputs.extra-env }} ${{ inputs.flake-check-timeout != '' && format('LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT={0}', inputs.flake-check-timeout) || '' }} lefthook run pre-commit --all-files'
 
     - name: Pre-push checks
+      if: inputs.skip-lefthook != 'true'
       shell: bash
       run: |
         TERM=dumb nix develop \
