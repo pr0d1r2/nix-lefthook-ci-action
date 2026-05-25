@@ -82,7 +82,8 @@ runs:
         TERM=dumb nix develop \
           ${{ inputs.accept-flake-config == 'true' && '--accept-flake-config' || '' }} \
           .#${{ inputs.devshell }} --ignore-environment --keep TERM \
-          --command lefthook install
+          --command bash -c \
+          '${{ inputs.extra-env }} lefthook install'
 
     - name: Pre-commit checks
       if: inputs.skip-lefthook != 'true' && inputs.skip-pre-commit != 'true'
