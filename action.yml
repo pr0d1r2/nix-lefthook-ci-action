@@ -63,7 +63,12 @@ runs:
       uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc
       with:
         name: ${{ inputs.cachix-cache }}
-        authToken: ${{ inputs.cachix-auth-token || '' }}
+        authToken: ${{ inputs.cachix-auth-token != '' && github.event.repository.private == false && inputs.cachix-auth-token || '' }}
+
+    - name: Cachix push skipped (private repo)
+      if: inputs.cachix-auth-token != '' && github.event.repository.private == true
+      shell: bash
+      run: echo "::warning::Cachix push skipped — repository is private. Push is only enabled for public repos to prevent leaking private build artifacts."
 
     - name: Pre-build commands
       if: inputs.pre-build-commands != ''

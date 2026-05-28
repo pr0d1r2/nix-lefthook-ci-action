@@ -37,6 +37,17 @@ jobs:
     skip-pre-commit: "true"
 ```
 
+### With cachix push (accelerates builds across repos)
+
+```yaml
+- uses: pr0d1r2/nix-lefthook-ci-action@<SHA>
+  with:
+    cachix-auth-token: ${{ secrets.CACHIX_AUTH_TOKEN }}
+```
+
+Set `CACHIX_AUTH_TOKEN` as a **repo-level** secret (not org-level).
+Push is automatically skipped for private repos to prevent leaking build artifacts.
+
 ## Inputs
 
 | Input | Default | Description |
@@ -50,12 +61,14 @@ jobs:
 | `devshell` | `ci` | Nix devShell to use (e.g. `ci`, `checks`) |
 | `skip-build` | `false` | Skip `nix build` step (for repos with no default package) |
 | `cachix-cache` | `pr0d1r2` | Cachix cache name (empty string disables) |
+| `cachix-auth-token` | `""` | Cachix auth token for pushing builds (public repos only) |
+| `skip-lefthook` | `false` | Skip all lefthook steps (for build-only jobs) |
 
 ## What it does
 
 1. Checks out code
 2. Installs Nix with flakes enabled
-3. Sets up cachix binary cache (pull-only, no auth needed for public caches)
+3. Sets up cachix binary cache (pull always; push when auth token provided and repo is public)
 4. Runs pre-build commands (if configured)
 5. Runs `nix build`
 6. Installs lefthook remotes
