@@ -2,7 +2,7 @@
 
 ## §G Goal
 
-Composite GitHub Action for Nix + lefthook CI. One-line drop-in for repos using `nix-dev-shell-agentic`. Checks out code, installs Nix with flakes, sets up cachix, builds the flake, then runs all lefthook pre-commit and pre-push hooks on all files. Pin by commit SHA for deterministic CI. Opensource-safe: zero credentials, zero local paths, zero private refs.
+Composite GitHub Action for Nix + lefthook CI. One-line drop-in for repos using `nix-dev-shell-agentic`. Checks out code, installs Nix with flakes, sets up cachix (pull + optional push), builds the flake, then runs all lefthook pre-commit and pre-push hooks on all files. Pin by commit SHA for deterministic CI. Opensource-safe: zero credentials in tracked files, zero local paths, zero private refs. Cachix push accelerates builds across all consumer repos — contributors and CI get pre-built devShells and packages.
 
 ## §C Constraints
 
@@ -15,6 +15,8 @@ Composite GitHub Action for Nix + lefthook CI. One-line drop-in for repos using 
 - C7: No `nix-dev-shell-agentic` dependency — this repo defines its own standalone `flake.nix` with devShell directly from nixpkgs
 - C8: Detached from parent project — no credential leaks, no hardcoded local paths, no private repo refs
 - C9: Dogfood — self-CI uses this action (`uses: ./`) to validate itself, proving the action works
+- C10: Cachix push never leaks private assets — push is gated on `github.event.repository.private == false` AND presence of auth token; private repos only pull from cache
+- C11: Cachix auth token is a runtime secret (`secrets.CACHIX_AUTH_TOKEN`) — never stored in tracked files, passed as action input from consumer workflow
 
 ## §I Interfaces
 
@@ -29,6 +31,7 @@ Composite GitHub Action for Nix + lefthook CI. One-line drop-in for repos using 
   - `devshell` (string, default `ci`) — nix devShell to use (e.g. `ci`, `checks`)
   - `skip-build` (bool, default `false`) — skip `nix build` step (for repos with no default package)
   - `cachix-cache` (string, default `pr0d1r2`) — cachix cache name for nix store caching; empty string disables cachix
+  - `cachix-auth-token` (string, default `""`) — cachix auth token for pushing builds; when non-empty AND repo is public, built store paths are pushed to cachix after successful build
 - I.ci: `.github/workflows/ci.yml` — self-CI: dogfoods this action with `skip-build: true`
 - I.flake: `flake.nix` — standalone devShell `ci` with all tools needed by lefthook remote hooks
 - I.lefthook: `lefthook.yml` — remote hooks appropriate for repo file types (`.yml`, `.md`, `.nix`)
@@ -36,13 +39,15 @@ Composite GitHub Action for Nix + lefthook CI. One-line drop-in for repos using 
 ## §V Invariants
 
 - V1: Action installs Nix with `experimental-features = nix-command flakes` via `cachix/install-nix-action` (SHA-pinned)
-- V1b: When `cachix-cache` is non-empty, action sets up cachix binary cache via `cachix/cachix-action` (SHA-pinned) — pull-only (no auth token needed for public caches)
+- V1b: When `cachix-cache` is non-empty, action sets up cachix binary cache via `cachix/cachix-action` (SHA-pinned) — pull-only when no auth token provided (public caches need no auth for reads)
+- V1c: When `cachix-auth-token` is non-empty AND `github.event.repository.private == false`, cachix-action receives auth token and pushes all built store paths to cache automatically (cachix-action handles push transparently after nix build/develop)
+- V1d: When `cachix-auth-token` is non-empty but repo is private, auth token is NOT passed to cachix-action — prevents leaking private build artifacts to public cache; a warning step logs that push was skipped due to private repo
 - V2: Action checks out code via `actions/checkout` (SHA-pinned)
 - V3: `nix build` runs before any lefthook checks — ensures flake evaluates cleanly (skippable via `skip-build`)
 - V4: `lefthook install` fetches remotes before running hooks
 - V5: Pre-commit runs `lefthook run pre-commit --all-files` — hooks use `{staged_files}` template, `--all-files` substitutes all tracked files
 - V6: Pre-push runs `lefthook run pre-push --all-files` — hooks use `{push_files}` template, `--all-files` substitutes all tracked files
-- V6b: Step ordering: checkout → cachix → nix install → pre-build commands → build → lefthook install → pre-commit → pre-push
+- V6b: Step ordering: checkout → nix install → cachix (with conditional push) → pre-build commands → build → lefthook install → pre-commit → pre-push
 - V7: `--ignore-environment` isolates from host — only `TERM` (and optionally `HOME`) kept
 - V8: `TERM=dumb` prevents terminal control sequences in CI logs
 - V9: Pre-build commands execute before `nix build` — enables setup like copying whitelist files
@@ -74,6 +79,13 @@ Composite GitHub Action for Nix + lefthook CI. One-line drop-in for repos using 
 | T8 | x | branch protection requiring PRs | C8 |
 | T9 | | test action on consumer repo (nix-lefthook-ascii-only PR) | C4 |
 | T10 | | roll out to all 50+ nix-lefthook-* repos | C2,C4 |
+| T13 | | add `cachix-auth-token` input to `action.yml` | I.inputs,C11 |
+| T14 | | gate cachix push on public repo + token presence — pass `authToken` to cachix-action only when both conditions met | V1c,V1d,C10 |
+| T15 | | add warning step when push skipped due to private repo | V1d |
+| T16 | | update README with cachix push usage example (secret setup) | T13 |
+| T17 | | update self-CI to pass `CACHIX_AUTH_TOKEN` secret for dogfooding push | V13,C9 |
+| T18 | x | update SPEC §V invariants for cachix push behavior | V1c,V1d |
+| T19 | | roll out `cachix-auth-token` input to consumer repos (set repo-level secret + pass in workflow) | T10,C10 |
 | T11 | x | lefthook.yml with remote hooks for repo file types (.yml, .md, .nix) | V14,V19,V20,I.lefthook |
 | T12 | x | self-CI dogfood: replace standalone actions with `uses: ./` + `skip-build: true` | V13,C9,I.ci |
 
