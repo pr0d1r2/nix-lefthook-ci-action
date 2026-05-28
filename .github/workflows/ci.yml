@@ -17,3 +17,4 @@ jobs:
       - uses: ./
         with:
           skip-build: "true"
+          cachix-auth-token: ${{ secrets.CACHIX_AUTH_TOKEN }}

@@ -79,11 +79,11 @@ Composite GitHub Action for Nix + lefthook CI. One-line drop-in for repos using 
 | T8 | x | branch protection requiring PRs | C8 |
 | T9 | | test action on consumer repo (nix-lefthook-ascii-only PR) | C4 |
 | T10 | | roll out to all 50+ nix-lefthook-* repos | C2,C4 |
-| T13 | | add `cachix-auth-token` input to `action.yml` | I.inputs,C11 |
-| T14 | | gate cachix push on public repo + token presence — pass `authToken` to cachix-action only when both conditions met | V1c,V1d,C10 |
-| T15 | | add warning step when push skipped due to private repo | V1d |
-| T16 | | update README with cachix push usage example (secret setup) | T13 |
-| T17 | | update self-CI to pass `CACHIX_AUTH_TOKEN` secret for dogfooding push | V13,C9 |
+| T13 | x | add `cachix-auth-token` input to `action.yml` | I.inputs,C11 |
+| T14 | x | gate cachix push on public repo + token presence — pass `authToken` to cachix-action only when both conditions met | V1c,V1d,C10 |
+| T15 | x | add warning step when push skipped due to private repo | V1d |
+| T16 | x | update README with cachix push usage example (secret setup) | T13 |
+| T17 | x | update self-CI to pass `CACHIX_AUTH_TOKEN` secret for dogfooding push | V13,C9 |
 | T18 | x | update SPEC §V invariants for cachix push behavior | V1c,V1d |
 | T19 | | roll out `cachix-auth-token` input to consumer repos (set repo-level secret + pass in workflow) | T10,C10 |
 | T11 | x | lefthook.yml with remote hooks for repo file types (.yml, .md, .nix) | V14,V19,V20,I.lefthook |
