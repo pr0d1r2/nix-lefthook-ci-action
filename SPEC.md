@@ -86,6 +86,7 @@ Composite GitHub Action for Nix + lefthook CI. One-line drop-in for repos using 
 | T17 | x | update self-CI to pass `CACHIX_AUTH_TOKEN` secret for dogfooding push | V13,C9 |
 | T18 | x | update SPEC §V invariants for cachix push behavior | V1c,V1d |
 | T19 | | roll out `cachix-auth-token` input to consumer repos (set repo-level secret + pass in workflow) | T10,C10 |
+| T20 | | test private repo guard — fork to private repo, set token, confirm warning appears and push skipped | V1d,C10 |
 | T11 | x | lefthook.yml with remote hooks for repo file types (.yml, .md, .nix) | V14,V19,V20,I.lefthook |
 | T12 | x | self-CI dogfood: replace standalone actions with `uses: ./` + `skip-build: true` | V13,C9,I.ci |
 
