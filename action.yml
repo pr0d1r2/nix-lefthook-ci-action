@@ -47,13 +47,34 @@ inputs:
     description: Skip all lefthook steps (install, pre-commit, pre-push) for build-only jobs
     required: false
     default: "false"
+  extra-platforms:
+    description: Additional platforms to support via QEMU (e.g. "aarch64-linux"). Installs QEMU and configures nix extra-platforms before the nix daemon starts.
+    required: false
+    default: ""
 
 runs:
   using: composite
   steps:
+    - name: Set up QEMU for extra platforms
+      if: inputs.extra-platforms != ''
+      shell: bash
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -yq qemu-user-static binfmt-support
+        for platform in ${{ inputs.extra-platforms }}; do
+          arch="${platform%%-*}"
+          sudo update-binfmts --enable "qemu-${arch}" 2>/dev/null || true
+        done
+
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
     - uses: DeterminateSystems/nix-installer-action@1d87d45818068401a10cf16bdc5f00b24994a83f
+      if: inputs.extra-platforms == ''
+
+    - uses: DeterminateSystems/nix-installer-action@1d87d45818068401a10cf16bdc5f00b24994a83f
+      if: inputs.extra-platforms != ''
+      with:
+        extra-conf: extra-platforms = ${{ inputs.extra-platforms }}
 
     - name: Set up cachix
       if: inputs.cachix-cache != ''

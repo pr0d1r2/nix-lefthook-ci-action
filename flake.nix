@@ -156,6 +156,13 @@
         ++ lefthookWrappers pkgs;
     in
     {
+      packages = forAllSystems (pkgs: {
+        default = pkgs.symlinkJoin {
+          name = "nix-lefthook-ci-action-packages";
+          paths = ciPackages pkgs;
+        };
+      });
+
       devShells = forAllSystems (pkgs: {
         ci = pkgs.mkShell {
           packages = ciPackages pkgs;
