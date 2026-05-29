@@ -129,3 +129,13 @@ runs:
           ${{ inputs.keep-home == 'true' && '--keep HOME' || '' }} \
           --command bash -c \
           '${{ inputs.keep-home == 'true' && 'mkdir -p "$HOME/.parallel" && touch "$HOME/.parallel/will-cite";' || '' }} ${{ inputs.extra-env }} ${{ inputs.flake-check-timeout != '' && format('LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT={0}', inputs.flake-check-timeout) || '' }} lefthook run pre-push --all-files'
+
+    - name: Flush cachix daemon
+      if: inputs.cachix-cache != '' && inputs.cachix-auth-token != '' && github.event.repository.private == false
+      shell: bash
+      run: |
+        # Composite actions have no post: step, so the cachix daemon
+        # never flushes. Stop it explicitly to push pending store paths.
+        if [ -n "${CACHIX_DAEMON_DIR:-}" ] && [ -S "${CACHIX_DAEMON_DIR}/cachix-daemon.sock" ]; then
+          cachix daemon stop --socket "${CACHIX_DAEMON_DIR}/cachix-daemon.sock" || true
+        fi
