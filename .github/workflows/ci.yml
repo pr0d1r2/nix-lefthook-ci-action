@@ -28,7 +28,7 @@ jobs:
       - uses: ./
         with:
 
-          skip-lefthook: "true"
+
           cachix-auth-token: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
   check-linux-arm:
@@ -41,5 +41,5 @@ jobs:
         with:
 
           extra-platforms: aarch64-linux
-          skip-lefthook: "true"
+
           cachix-auth-token: ${{ secrets.CACHIX_AUTH_TOKEN }}
