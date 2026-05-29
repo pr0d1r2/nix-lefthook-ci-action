@@ -338,6 +338,22 @@
         "type": "github"
       }
     },
+    "nix-lefthook-actionlint-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1780031438,
+        "narHash": "sha256-rCY6q8Dh6nDXSuCB+scRxFbinIXAXkZtmw8t52FE0Yk=",
+        "owner": "pr0d1r2",
+        "repo": "nix-lefthook-actionlint",
+        "rev": "7ad07709e13ecf63b8e2b6f00fe21a5a19eb9e9e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pr0d1r2",
+        "repo": "nix-lefthook-actionlint",
+        "type": "github"
+      }
+    },
     "nix-lefthook-ascii-only-src": {
       "flake": false,
       "locked": {
@@ -2945,6 +2961,7 @@
     "root": {
       "inputs": {
         "nix-lefthook": "nix-lefthook",
+        "nix-lefthook-actionlint-src": "nix-lefthook-actionlint-src",
         "nix-lefthook-deadnix-src": "nix-lefthook-deadnix-src_4",
         "nix-lefthook-editorconfig-checker-src": "nix-lefthook-editorconfig-checker-src_4",
         "nix-lefthook-git-conflict-markers-src": "nix-lefthook-git-conflict-markers-src_4",
