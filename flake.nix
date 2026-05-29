@@ -62,6 +62,10 @@
       url = "github:pr0d1r2/nix-lefthook-yamllint";
       flake = false;
     };
+    nix-lefthook-actionlint-src = {
+      url = "github:pr0d1r2/nix-lefthook-actionlint";
+      flake = false;
+    };
   };
 
   outputs =
@@ -80,6 +84,7 @@
       nix-lefthook-trailing-whitespace-src,
       nix-lefthook-typos-src,
       nix-lefthook-yamllint-src,
+      nix-lefthook-actionlint-src,
       ...
     }:
     let
@@ -143,6 +148,9 @@
           })
           (wrap "lefthook-yamllint" nix-lefthook-yamllint-src {
             runtimeInputs = [ pkgs.yamllint ];
+          })
+          (wrap "lefthook-actionlint" nix-lefthook-actionlint-src {
+            runtimeInputs = [ pkgs.actionlint ];
           })
         ];
 
