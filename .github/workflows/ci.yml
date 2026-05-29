@@ -16,7 +16,6 @@ jobs:
 
       - uses: ./
         with:
-
           cachix-auth-token: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
   check-darwin:
@@ -27,8 +26,6 @@ jobs:
 
       - uses: ./
         with:
-
-
           cachix-auth-token: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
   check-linux-arm:
@@ -39,7 +36,5 @@ jobs:
 
       - uses: ./
         with:
-
           extra-platforms: aarch64-linux
-
           cachix-auth-token: ${{ secrets.CACHIX_AUTH_TOKEN }}
