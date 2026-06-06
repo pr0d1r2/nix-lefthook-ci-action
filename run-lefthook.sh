@@ -15,7 +15,8 @@ set -euo pipefail
 #   FLAKE_CHECK_TIMEOUT  — override LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT (seconds)
 #   FLAKE_EVAL_TIMEOUT   — override LEFTHOOK_NIX_FLAKE_EVAL_TIMEOUT (seconds)
 
-nix_args=(TERM=dumb nix develop)
+export TERM=dumb
+nix_args=(nix develop)
 [[ "${ACCEPT_FLAKE_CONFIG:-}" == "true" ]] && nix_args+=(--accept-flake-config)
 nix_args+=(".#${DEVSHELL}" --ignore-environment --keep TERM)
 [[ "${KEEP_HOME:-}" == "true" ]] && nix_args+=(--keep HOME)
