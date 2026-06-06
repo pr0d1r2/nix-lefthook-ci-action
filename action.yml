@@ -105,34 +105,38 @@ runs:
     - name: Install lefthook remotes
       if: inputs.skip-lefthook != 'true'
       shell: bash
-      run: |
-        TERM=dumb nix develop \
-          ${{ inputs.accept-flake-config == 'true' && '--accept-flake-config' || '' }} \
-          .#${{ inputs.devshell }} --ignore-environment --keep TERM \
-          --command bash -c \
-          '${{ inputs.extra-env }} lefthook install'
+      env:
+        STAGE: install
+        DEVSHELL: ${{ inputs.devshell }}
+        ACCEPT_FLAKE_CONFIG: ${{ inputs.accept-flake-config }}
+        EXTRA_ENV: ${{ inputs.extra-env }}
+      run: ${{ github.action_path }}/run-lefthook.sh
 
     - name: Pre-commit checks
       if: inputs.skip-lefthook != 'true' && inputs.skip-pre-commit != 'true'
       shell: bash
-      run: |
-        TERM=dumb nix develop \
-          ${{ inputs.accept-flake-config == 'true' && '--accept-flake-config' || '' }} \
-          .#${{ inputs.devshell }} --ignore-environment --keep TERM \
-          ${{ inputs.keep-home == 'true' && '--keep HOME' || '' }} \
-          --command bash -c \
-          '${{ inputs.keep-home == 'true' && 'mkdir -p "$HOME/.parallel" && touch "$HOME/.parallel/will-cite";' || '' }} ${{ inputs.extra-env }} ${{ inputs.flake-check-timeout != '' && format('LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT={0}', inputs.flake-check-timeout) || '' }} ${{ inputs.flake-eval-timeout != '' && format('LEFTHOOK_NIX_FLAKE_EVAL_TIMEOUT={0}', inputs.flake-eval-timeout) || '' }} lefthook run pre-commit --all-files'
+      env:
+        STAGE: pre-commit
+        DEVSHELL: ${{ inputs.devshell }}
+        ACCEPT_FLAKE_CONFIG: ${{ inputs.accept-flake-config }}
+        KEEP_HOME: ${{ inputs.keep-home }}
+        EXTRA_ENV: ${{ inputs.extra-env }}
+        FLAKE_CHECK_TIMEOUT: ${{ inputs.flake-check-timeout }}
+        FLAKE_EVAL_TIMEOUT: ${{ inputs.flake-eval-timeout }}
+      run: ${{ github.action_path }}/run-lefthook.sh
 
     - name: Pre-push checks
       if: inputs.skip-lefthook != 'true'
       shell: bash
-      run: |
-        TERM=dumb nix develop \
-          ${{ inputs.accept-flake-config == 'true' && '--accept-flake-config' || '' }} \
-          .#${{ inputs.devshell }} --ignore-environment --keep TERM \
-          ${{ inputs.keep-home == 'true' && '--keep HOME' || '' }} \
-          --command bash -c \
-          '${{ inputs.keep-home == 'true' && 'mkdir -p "$HOME/.parallel" && touch "$HOME/.parallel/will-cite";' || '' }} ${{ inputs.extra-env }} ${{ inputs.flake-check-timeout != '' && format('LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT={0}', inputs.flake-check-timeout) || '' }} ${{ inputs.flake-eval-timeout != '' && format('LEFTHOOK_NIX_FLAKE_EVAL_TIMEOUT={0}', inputs.flake-eval-timeout) || '' }} lefthook run pre-push --all-files'
+      env:
+        STAGE: pre-push
+        DEVSHELL: ${{ inputs.devshell }}
+        ACCEPT_FLAKE_CONFIG: ${{ inputs.accept-flake-config }}
+        KEEP_HOME: ${{ inputs.keep-home }}
+        EXTRA_ENV: ${{ inputs.extra-env }}
+        FLAKE_CHECK_TIMEOUT: ${{ inputs.flake-check-timeout }}
+        FLAKE_EVAL_TIMEOUT: ${{ inputs.flake-eval-timeout }}
+      run: ${{ github.action_path }}/run-lefthook.sh
 
     - name: Flush cachix daemon
       if: inputs.cachix-cache != '' && inputs.cachix-auth-token != '' && github.event.repository.private == false

@@ -66,6 +66,14 @@
       url = "github:pr0d1r2/nix-lefthook-actionlint";
       flake = false;
     };
+    nix-lefthook-shellcheck-src = {
+      url = "github:pr0d1r2/nix-lefthook-shellcheck";
+      flake = false;
+    };
+    nix-lefthook-shfmt-src = {
+      url = "github:pr0d1r2/nix-lefthook-shfmt";
+      flake = false;
+    };
   };
 
   outputs =
@@ -85,6 +93,8 @@
       nix-lefthook-typos-src,
       nix-lefthook-yamllint-src,
       nix-lefthook-actionlint-src,
+      nix-lefthook-shellcheck-src,
+      nix-lefthook-shfmt-src,
       ...
     }:
     let
@@ -152,12 +162,27 @@
           (wrap "lefthook-actionlint" nix-lefthook-actionlint-src {
             runtimeInputs = [ pkgs.actionlint ];
           })
+          (wrap "lefthook-shellcheck" nix-lefthook-shellcheck-src {
+            runtimeInputs = [ pkgs.shellcheck ];
+          })
+          (wrap "lefthook-shfmt" nix-lefthook-shfmt-src {
+            runtimeInputs = [ pkgs.shfmt ];
+          })
         ];
+
+      batsWithLibs =
+        pkgs:
+        pkgs.bats.withLibraries (p: [
+          p.bats-support
+          p.bats-assert
+          p.bats-file
+        ]);
 
       ciPackages =
         pkgs:
         [
           nix-lefthook.packages.${pkgs.system}.default
+          (batsWithLibs pkgs)
           pkgs.git
           pkgs.nix
         ]
