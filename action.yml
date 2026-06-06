@@ -19,6 +19,10 @@ inputs:
     description: Override LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT (seconds)
     required: false
     default: ""
+  flake-eval-timeout:
+    description: Override LEFTHOOK_NIX_FLAKE_EVAL_TIMEOUT (seconds)
+    required: false
+    default: ""
   keep-home:
     description: Keep HOME in nix develop (needed for GNU parallel)
     required: false
@@ -117,7 +121,7 @@ runs:
           .#${{ inputs.devshell }} --ignore-environment --keep TERM \
           ${{ inputs.keep-home == 'true' && '--keep HOME' || '' }} \
           --command bash -c \
-          '${{ inputs.keep-home == 'true' && 'mkdir -p "$HOME/.parallel" && touch "$HOME/.parallel/will-cite";' || '' }} ${{ inputs.extra-env }} ${{ inputs.flake-check-timeout != '' && format('LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT={0}', inputs.flake-check-timeout) || '' }} lefthook run pre-commit --all-files'
+          '${{ inputs.keep-home == 'true' && 'mkdir -p "$HOME/.parallel" && touch "$HOME/.parallel/will-cite";' || '' }} ${{ inputs.extra-env }} ${{ inputs.flake-check-timeout != '' && format('LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT={0}', inputs.flake-check-timeout) || '' }} ${{ inputs.flake-eval-timeout != '' && format('LEFTHOOK_NIX_FLAKE_EVAL_TIMEOUT={0}', inputs.flake-eval-timeout) || '' }} lefthook run pre-commit --all-files'
 
     - name: Pre-push checks
       if: inputs.skip-lefthook != 'true'
@@ -128,7 +132,7 @@ runs:
           .#${{ inputs.devshell }} --ignore-environment --keep TERM \
           ${{ inputs.keep-home == 'true' && '--keep HOME' || '' }} \
           --command bash -c \
-          '${{ inputs.keep-home == 'true' && 'mkdir -p "$HOME/.parallel" && touch "$HOME/.parallel/will-cite";' || '' }} ${{ inputs.extra-env }} ${{ inputs.flake-check-timeout != '' && format('LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT={0}', inputs.flake-check-timeout) || '' }} lefthook run pre-push --all-files'
+          '${{ inputs.keep-home == 'true' && 'mkdir -p "$HOME/.parallel" && touch "$HOME/.parallel/will-cite";' || '' }} ${{ inputs.extra-env }} ${{ inputs.flake-check-timeout != '' && format('LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT={0}', inputs.flake-check-timeout) || '' }} ${{ inputs.flake-eval-timeout != '' && format('LEFTHOOK_NIX_FLAKE_EVAL_TIMEOUT={0}', inputs.flake-eval-timeout) || '' }} lefthook run pre-push --all-files'
 
     - name: Flush cachix daemon
       if: inputs.cachix-cache != '' && inputs.cachix-auth-token != '' && github.event.repository.private == false
