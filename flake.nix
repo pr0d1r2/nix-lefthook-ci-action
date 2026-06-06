@@ -170,10 +170,19 @@
           })
         ];
 
+      batsWithLibs =
+        pkgs:
+        pkgs.bats.withLibraries (p: [
+          p.bats-support
+          p.bats-assert
+          p.bats-file
+        ]);
+
       ciPackages =
         pkgs:
         [
           nix-lefthook.packages.${pkgs.system}.default
+          (batsWithLibs pkgs)
           pkgs.git
           pkgs.nix
         ]
