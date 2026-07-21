@@ -92,4 +92,6 @@ Composite GitHub Action for Nix + lefthook CI. One-line drop-in for repos using 
 
 ## §B Bugs
 
-(none yet)
+| id | date | cause | fix |
+|----|------|-------|-----|
+| B1 | 2026-07-21 | duplicate `default` attribute in `packages` (symlinkJoin + mkShell both referencing undefined `ciPackages`) broke flake evaluation | remove both broken `default` entries from `packages`; devShells already handled by `set-and-setting.lib.mkDevShells` |

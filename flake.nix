@@ -47,16 +47,6 @@
     in
     {
       packages = forAllSystems (pkgs: {
-        default = pkgs.symlinkJoin {
-          name = "nix-lefthook-ci-action-packages";
-          paths = ciPackages pkgs;
-        };
-        default = pkgs.mkShell {
-          packages = ciPackages pkgs;
-          shellHook = ''
-            [ -f .git/hooks/pre-commit ] || lefthook install
-          '';
-        };
         setting = (set-and-setting.lib.mkSetting { inherit pkgs; }).materialized;
       });
 
