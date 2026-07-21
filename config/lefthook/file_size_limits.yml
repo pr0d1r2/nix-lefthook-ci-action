@@ -1,0 +1,4 @@
+default: 10000
+extensions:
+  lock: 100000
+  md: 20000

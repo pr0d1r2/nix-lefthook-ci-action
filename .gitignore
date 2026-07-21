@@ -2,3 +2,7 @@ result
 result-*
 .direnv
 .lefthook/
+.direnv/
+.markdownlint.yml
+.yamllint.yml
+lefthook.yml
