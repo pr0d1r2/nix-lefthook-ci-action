@@ -23,17 +23,17 @@ nix_args+=(".#${DEVSHELL}" --ignore-environment --keep TERM)
 
 cmd=""
 if [[ "${KEEP_HOME:-}" == "true" ]]; then
-    # shellcheck disable=SC2016 # $HOME must expand in the inner bash -c shell, not here
-    cmd+='mkdir -p "$HOME/.parallel" && touch "$HOME/.parallel/will-cite"; '
+  # shellcheck disable=SC2016 # $HOME must expand in the inner bash -c shell, not here
+  cmd+='mkdir -p "$HOME/.parallel" && touch "$HOME/.parallel/will-cite"; '
 fi
 [[ -n "${EXTRA_ENV:-}" ]] && cmd+="${EXTRA_ENV} "
 [[ -n "${FLAKE_CHECK_TIMEOUT:-}" ]] && cmd+="LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT=${FLAKE_CHECK_TIMEOUT} "
 [[ -n "${FLAKE_EVAL_TIMEOUT:-}" ]] && cmd+="LEFTHOOK_NIX_FLAKE_EVAL_TIMEOUT=${FLAKE_EVAL_TIMEOUT} "
 
 if [[ "$STAGE" == "install" ]]; then
-    cmd+="lefthook install"
+  cmd+="lefthook install"
 else
-    cmd+="lefthook run ${STAGE} --all-files"
+  cmd+="lefthook run ${STAGE} --all-files"
 fi
 
 nix_args+=(--command bash -c "$cmd")

@@ -110,7 +110,7 @@ runs:
         DEVSHELL: ${{ inputs.devshell }}
         ACCEPT_FLAKE_CONFIG: ${{ inputs.accept-flake-config }}
         EXTRA_ENV: ${{ inputs.extra-env }}
-      run: ${{ github.action_path }}/run-lefthook.sh
+      run: bash ${{ github.action_path }}/run-lefthook.sh
 
     - name: Pre-commit checks
       if: inputs.skip-lefthook != 'true' && inputs.skip-pre-commit != 'true'
@@ -123,7 +123,7 @@ runs:
         EXTRA_ENV: ${{ inputs.extra-env }}
         FLAKE_CHECK_TIMEOUT: ${{ inputs.flake-check-timeout }}
         FLAKE_EVAL_TIMEOUT: ${{ inputs.flake-eval-timeout }}
-      run: ${{ github.action_path }}/run-lefthook.sh
+      run: bash ${{ github.action_path }}/run-lefthook.sh
 
     - name: Pre-push checks
       if: inputs.skip-lefthook != 'true'
@@ -136,7 +136,7 @@ runs:
         EXTRA_ENV: ${{ inputs.extra-env }}
         FLAKE_CHECK_TIMEOUT: ${{ inputs.flake-check-timeout }}
         FLAKE_EVAL_TIMEOUT: ${{ inputs.flake-eval-timeout }}
-      run: ${{ github.action_path }}/run-lefthook.sh
+      run: bash ${{ github.action_path }}/run-lefthook.sh
 
     - name: Flush cachix daemon
       if: inputs.cachix-cache != '' && inputs.cachix-auth-token != '' && github.event.repository.private == false

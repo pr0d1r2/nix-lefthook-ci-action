@@ -99,7 +99,8 @@
                   pkgs.gawk
                   pkgs.git
                   pkgs.gnugrep
-                ] ++ mat.packages;
+                ]
+                ++ mat.packages;
                 text = ''
                   export FRAGMENTS_DIR="${set-and-setting}/setting/integrations/lefthook"
                   export ASSEMBLE_SCRIPT="${set-and-setting}/setting/lib/assemble-lefthook.sh"
