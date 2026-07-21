@@ -90,7 +90,7 @@ runs:
     - name: Cachix push skipped (private repo)
       if: inputs.cachix-auth-token != '' && github.event.repository.private == true
       shell: bash
-      run: echo "::warning::Cachix push skipped — repository is private. Push is only enabled for public repos to prevent leaking private build artifacts."
+      run: echo "::warning::Cachix push skipped -- repository is private. Push is only enabled for public repos to prevent leaking private build artifacts."
 
     - name: Pre-build commands
       if: inputs.pre-build-commands != ''

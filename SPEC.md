@@ -95,3 +95,6 @@ Composite GitHub Action for Nix + lefthook CI. One-line drop-in for repos using 
 | id | date | cause | fix |
 |----|------|-------|-----|
 | B1 | 2026-07-21 | duplicate `default` attribute in `packages` (symlinkJoin + mkShell both referencing undefined `ciPackages`) broke flake evaluation | remove both broken `default` entries from `packages`; devShells already handled by `set-and-setting.lib.mkDevShells` |
+| B2 | 2026-07-21 | `confirm` app coherence check fails — `lefthook-markdownlint`, `lefthook-markdownlint-agentic`, `lefthook-yamllint` referenced in generated `lefthook.yml` but not on PATH because confirm app's `runtimeInputs` only had basic tools | add `mat.packages` (from `materializationFor`) to confirm app's `runtimeInputs` so all fragment tools are on PATH |
+| B3 | 2026-07-21 | ascii-only check fails on em-dash in `action.yml` cachix push warning message | replace em-dash with ASCII double-dash (`--`) |
+| B4 | 2026-07-21 | deadnix flags unused `nix-lefthook` flake input (declared and destructured but never referenced in outputs) | remove `nix-lefthook` input; tools come transitively via `set-and-setting` |
