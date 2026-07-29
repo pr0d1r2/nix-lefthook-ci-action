@@ -30,7 +30,7 @@
     })
       {
         inherit self nixpkgs;
-        set-and-setting = set-and-setting.inputs.set-and-setting;
+        inherit (set-and-setting.inputs) set-and-setting;
         fragments = [
           "base"
           "nix"
