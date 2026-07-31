@@ -20,25 +20,16 @@
       set-and-setting,
       ...
     }:
-    (import "${set-and-setting}/set/lib/mk-consumer-flake.nix" {
-      supportedSystems = [
-        "aarch64-darwin"
-        "x86_64-darwin"
-        "x86_64-linux"
-        "aarch64-linux"
+    set-and-setting.lib.mkConsumerFlake {
+      inherit self nixpkgs set-and-setting;
+      fragments = [
+        "base"
+        "nix"
+        "shell"
+        "ascii"
+        "markdown"
+        "yaml"
       ];
-    })
-      {
-        inherit self nixpkgs;
-        inherit (set-and-setting.inputs) set-and-setting;
-        fragments = [
-          "base"
-          "nix"
-          "shell"
-          "ascii"
-          "markdown"
-          "yaml"
-        ];
-        src = ./.;
-      };
+      src = ./.;
+    };
 }
