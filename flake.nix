@@ -31,6 +31,24 @@
         "markdown"
         "yaml"
       ];
+      lib = set-and-setting.lib // {
+        materializationFor = args:
+          let
+            materialization = set-and-setting.lib.materializationFor args;
+          in
+          materialization
+          // {
+            packages = materialization.packages ++ [
+              (args.pkgs.writeShellApplication {
+                name = "lefthook-actionlint";
+                runtimeInputs = [ args.pkgs.actionlint ];
+                text = ''
+                  actionlint "$@"
+                '';
+              })
+            ];
+          };
+      };
       extraChecks = pkgs: {
         actionlint = set-and-setting.lib.mkLefthookCheck {
           inherit pkgs;
