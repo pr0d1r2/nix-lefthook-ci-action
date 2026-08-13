@@ -33,6 +33,69 @@
         "yaml"
       ];
       lib = set-and-setting.lib // {
+        # The pinned set-and-setting helper still passes a scalar regex to
+        # nixpkgs' sourceByRegex.  Override it locally until that dependency
+        # updates, while preserving actionlint's workflow-file selection.
+        mkActionlintCheck = args:
+          set-and-setting.lib.mkLefthookCheck {
+            inherit (args) pkgs;
+            src = args.pkgs.lib.sources.sourceByRegex args.src [ "^\\.github/workflows/.*" ];
+            wrapper = args.pkgs.writeShellApplication {
+              name = "actionlint-check";
+              runtimeInputs = [ args.pkgs.actionlint ];
+              text = ''
+                actionlint "$@"
+              '';
+            };
+            name = args.name or "actionlint";
+            suffices = [ ".yml" ".yaml" ];
+            checkFlag = "";
+          };
+        checksFor =
+          {
+            pkgs,
+            src,
+            fragments,
+          }:
+          import "${set-and-setting}/lib/checks-for.nix" {
+            inherit pkgs src fragments;
+            inherit (set-and-setting.lib)
+              mkNixfmtCheck
+              mkShfmtCheck
+              mkTrailingWhitespaceCheck
+              mkMissingFinalNewlineCheck
+              mkEditorconfigCheckerCheck
+              mkShellcheckCheck
+              mkNoShellFunctionsCheck
+              mkAsciiOnlyCheck
+              mkTyposCheck
+              mkStatixCheck
+              mkDeadnixCheck
+              mkNixNoEmbeddedShellCheck
+              mkFlakeManifestCheck
+              mkGitleaksCheck
+              mkGitConflictMarkersCheck
+              mkGitNoLocalPathsCheck
+              mkExecutePermissionsCheck
+              mkFileSizeCheckCheck
+              mkLinterCoverageCheck
+              ;
+            mkActionlintCheck = args:
+              set-and-setting.lib.mkLefthookCheck {
+                inherit (args) pkgs;
+                src = args.pkgs.lib.sources.sourceByRegex args.src [ "^\\.github/workflows/.*" ];
+                wrapper = args.pkgs.writeShellApplication {
+                  name = "actionlint-check";
+                  runtimeInputs = [ args.pkgs.actionlint ];
+                  text = ''
+                    actionlint "$@"
+                  '';
+                };
+                name = args.name or "actionlint";
+                suffices = [ ".yml" ".yaml" ];
+                checkFlag = "";
+              };
+          };
         materializationFor = args:
           let
             materialization = set-and-setting.lib.materializationFor args;
@@ -49,25 +112,6 @@
               })
             ];
           };
-      };
-      extraChecks = pkgs: {
-        actionlint = set-and-setting.lib.mkLefthookCheck {
-          inherit pkgs;
-          wrapper = pkgs.writeShellApplication {
-            name = "actionlint-check";
-            runtimeInputs = [ pkgs.actionlint ];
-            text = ''
-              actionlint "$@"
-            '';
-          };
-          src = pkgs.lib.sources.sourceByRegex ./. [ "^.github/workflows/.*" ];
-          name = "actionlint";
-          suffices = [
-            ".yml"
-            ".yaml"
-          ];
-          checkFlag = "";
-        };
       };
       src = ./.;
     };
