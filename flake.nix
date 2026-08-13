@@ -25,13 +25,31 @@
       inherit self nixpkgs set-and-setting;
       fragments = [
         "base"
-        "actions"
         "nix"
         "shell"
         "ascii"
         "markdown"
         "yaml"
       ];
+      extraChecks = pkgs: {
+        actionlint = set-and-setting.lib.mkLefthookCheck {
+          inherit pkgs;
+          wrapper = pkgs.writeShellApplication {
+            name = "actionlint-check";
+            runtimeInputs = [ pkgs.actionlint ];
+            text = ''
+              actionlint "$@"
+            '';
+          };
+          src = pkgs.lib.sources.sourceByRegex ./. [ "^.github/workflows/.*" ];
+          name = "actionlint";
+          suffices = [
+            ".yml"
+            ".yaml"
+          ];
+          checkFlag = "";
+        };
+      };
       src = ./.;
     };
 }
