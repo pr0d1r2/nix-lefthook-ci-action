@@ -36,7 +36,8 @@
         # The pinned set-and-setting helper still passes a scalar regex to
         # nixpkgs' sourceByRegex.  Override it locally until that dependency
         # updates, while preserving actionlint's workflow-file selection.
-        mkActionlintCheck = args:
+        mkActionlintCheck =
+          args:
           set-and-setting.lib.mkLefthookCheck {
             inherit (args) pkgs;
             src = args.pkgs.lib.sources.sourceByRegex args.src [ "^\\.github/workflows/.*" ];
@@ -48,7 +49,10 @@
               '';
             };
             name = args.name or "actionlint";
-            suffices = [ ".yml" ".yaml" ];
+            suffices = [
+              ".yml"
+              ".yaml"
+            ];
             checkFlag = "";
           };
         checksFor =
@@ -80,7 +84,8 @@
               mkFileSizeCheckCheck
               mkLinterCoverageCheck
               ;
-            mkActionlintCheck = args:
+            mkActionlintCheck =
+              args:
               set-and-setting.lib.mkLefthookCheck {
                 inherit (args) pkgs;
                 src = args.pkgs.lib.sources.sourceByRegex args.src [ "^\\.github/workflows/.*" ];
@@ -92,26 +97,32 @@
                   '';
                 };
                 name = args.name or "actionlint";
-                suffices = [ ".yml" ".yaml" ];
+                suffices = [
+                  ".yml"
+                  ".yaml"
+                ];
                 checkFlag = "";
               };
           };
-        materializationFor = args:
-          let
-            materialization = set-and-setting.lib.materializationFor args;
-          in
-          materialization
-          // {
-            packages = materialization.packages ++ [
-              (args.pkgs.writeShellApplication {
-                name = "lefthook-actionlint";
-                runtimeInputs = [ args.pkgs.actionlint ];
-                text = ''
-                  actionlint "$@"
-                '';
-              })
-            ];
-          };
+        materializationFor =
+          args:
+          (
+            let
+              materialization = set-and-setting.lib.materializationFor args;
+            in
+            materialization
+            // {
+              packages = materialization.packages ++ [
+                (args.pkgs.writeShellApplication {
+                  name = "lefthook-actionlint";
+                  runtimeInputs = [ args.pkgs.actionlint ];
+                  text = ''
+                    actionlint "$@"
+                  '';
+                })
+              ];
+            }
+          );
       };
       src = ./.;
     };
