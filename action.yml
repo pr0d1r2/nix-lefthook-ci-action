@@ -74,11 +74,16 @@ runs:
 
     - uses: DeterminateSystems/nix-installer-action@1d87d45818068401a10cf16bdc5f00b24994a83f
       if: inputs.extra-platforms == ''
+      with:
+        extra-conf: |
+          access-tokens = github.com=${{ github.token }}
 
     - uses: DeterminateSystems/nix-installer-action@1d87d45818068401a10cf16bdc5f00b24994a83f
       if: inputs.extra-platforms != ''
       with:
-        extra-conf: extra-platforms = ${{ inputs.extra-platforms }}
+        extra-conf: |
+          access-tokens = github.com=${{ github.token }}
+          extra-platforms = ${{ inputs.extra-platforms }}
 
     - name: Set up cachix
       if: inputs.cachix-cache != ''
