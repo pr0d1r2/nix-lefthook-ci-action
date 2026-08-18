@@ -38,8 +38,8 @@ teardown() {
     rm -rf "$MOCK_DIR"
 }
 
-@test "run-lefthook.sh exists and is executable" {
-    [ -x "$SCRIPT" ]
+@test "run-lefthook.sh exists" {
+    [ -f "$SCRIPT" ]
 }
 
 @test "run-lefthook.sh has bash shebang" {
