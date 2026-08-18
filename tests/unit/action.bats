@@ -11,7 +11,7 @@ setup() {
 }
 
 @test "nix installer without extra platforms uses the GitHub token" {
-    run grep -A3 "if: inputs.extra-platforms == ''" "$ACTION"
+    run grep -A4 "if: inputs.extra-platforms == ''" "$ACTION"
     [ "$status" -eq 0 ]
     [[ "$output" == *'access-tokens = github.com=${{ github.token }}'* ]]
 }
