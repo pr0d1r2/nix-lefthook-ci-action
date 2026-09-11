@@ -112,17 +112,19 @@
             in
             materialization
             // {
-              packages = (builtins.filter (
-                package: (package.name or null) != "lefthook-actionlint"
-              ) materialization.packages) ++ [
-                (args.pkgs.writeShellApplication {
-                  name = "lefthook-actionlint";
-                  runtimeInputs = [ args.pkgs.actionlint ];
-                  text = ''
-                    actionlint "$@"
-                  '';
-                })
-              ];
+              packages =
+                (builtins.filter (
+                  package: (package.name or null) != "lefthook-actionlint"
+                ) materialization.packages)
+                ++ [
+                  (args.pkgs.writeShellApplication {
+                    name = "lefthook-actionlint";
+                    runtimeInputs = [ args.pkgs.actionlint ];
+                    text = ''
+                      actionlint "$@"
+                    '';
+                  })
+                ];
             }
           );
       };
