@@ -45,7 +45,7 @@
               name = "actionlint-check";
               runtimeInputs = [ args.pkgs.actionlint ];
               text = ''
-                actionlint "$@"
+                exec ${args.pkgs.actionlint}/bin/actionlint "$@"
               '';
             };
             name = args.name or "actionlint";
@@ -93,7 +93,7 @@
                   name = "actionlint-check";
                   runtimeInputs = [ args.pkgs.actionlint ];
                   text = ''
-                    actionlint "$@"
+                    exec ${args.pkgs.actionlint}/bin/actionlint "$@"
                   '';
                 };
                 name = args.name or "actionlint";
@@ -112,7 +112,9 @@
             in
             materialization
             // {
-              packages = materialization.packages ++ [
+              packages = (builtins.filter (
+                package: (package.name or null) != "lefthook-actionlint"
+              ) materialization.packages) ++ [
                 (args.pkgs.writeShellApplication {
                   name = "lefthook-actionlint";
                   runtimeInputs = [ args.pkgs.actionlint ];
