@@ -113,6 +113,7 @@
             materialization
             // {
               packages = materialization.packages ++ [
+                args.pkgs.actionlint
                 (args.pkgs.writeShellApplication {
                   name = "lefthook-actionlint";
                   runtimeInputs = [ args.pkgs.actionlint ];
