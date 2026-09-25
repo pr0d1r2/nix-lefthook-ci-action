@@ -11,13 +11,13 @@ setup() {
 }
 
 @test "nix installer without extra platforms uses the GitHub token" {
-    run grep -A4 "if: inputs.extra-platforms == ''" "$ACTION"
+    run grep -A5 "if: inputs.extra-platforms == ''" "$ACTION"
     [ "$status" -eq 0 ]
     [[ "$output" == *'access-tokens = github.com=${{ github.token }}'* ]]
 }
 
 @test "nix installer with extra platforms keeps both settings" {
-    run grep -A5 "if: inputs.extra-platforms != ''" "$ACTION"
+    run grep -A6 "if: inputs.extra-platforms != ''" "$ACTION"
     [ "$status" -eq 0 ]
     [[ "$output" == *'access-tokens = github.com=${{ github.token }}'* ]]
     [[ "$output" == *'extra-platforms = ${{ inputs.extra-platforms }}'* ]]
