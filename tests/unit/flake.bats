@@ -10,9 +10,9 @@ setup() {
     FLAKE="$REPO_ROOT/flake.nix"
 }
 
-@test "uses the standard checksFor and actionlint implementation" {
-    run grep -E 'checksFor|mkActionlintCheck' "$FLAKE"
-    [ "$status" -ne 0 ]
+@test "uses the standard consumer flake implementation" {
+    run grep -F 'set-and-setting.lib.mkConsumerFlake' "$FLAKE"
+    [ "$status" -eq 0 ]
 }
 
 @test "declares the actions fragment for workflow checks" {
