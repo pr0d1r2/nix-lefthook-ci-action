@@ -416,6 +416,22 @@
         "type": "github"
       }
     },
+    "nix-lefthook-tdd-order-bats-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1785309008,
+        "narHash": "sha256-g37iSZbsVzv7eg3I+aWUDekOseu5NlUpM9xBWB4s8yc=",
+        "owner": "pr0d1r2",
+        "repo": "nix-lefthook-tdd-order-bats",
+        "rev": "9c1f614938ff40ad07285288098939869c2eb8e5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pr0d1r2",
+        "repo": "nix-lefthook-tdd-order-bats",
+        "type": "github"
+      }
+    },
     "nix-lefthook-trailing-whitespace-src": {
       "flake": false,
       "locked": {
@@ -482,11 +498,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1787640266,
-        "narHash": "sha256-MrkfE5hF5xx4L/0h5NyJ3xQkKVftwSuKSkFSrvlTxGY=",
+        "lastModified": 1790218706,
+        "narHash": "sha256-6e4Na3z008XpdVyOXgfasXIn1aN+z8AXFG+jXdQSyuI=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f4f698677b11021a8f84f452e23ae9ef2427bec3",
+        "rev": "c508844df6c28fa6dabc1b6af70f3ccbd65c5201",
         "type": "github"
       },
       "original": {
@@ -501,11 +517,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1787697711,
-        "narHash": "sha256-KQEuYBqKuHQMFejOM4Iq62Lu/fHZ1YiQYRKhhoIbodM=",
+        "lastModified": 1790288169,
+        "narHash": "sha256-iUF387Sv2ICvEe4i3l+QYiBJ8EeA1A6poV+Qx4e5irQ=",
         "owner": "pr0d1r2",
         "repo": "nixpkgs-lock",
-        "rev": "9854d7367f270c0ad77e887d606811c14edf38bb",
+        "rev": "a2f5c3da9902d2d6aad0898250c27147beadcd6c",
         "type": "github"
       },
       "original": {
@@ -552,6 +568,7 @@
         "nix-lefthook-shellcheck-src": "nix-lefthook-shellcheck-src",
         "nix-lefthook-shfmt-src": "nix-lefthook-shfmt-src",
         "nix-lefthook-statix-src": "nix-lefthook-statix-src",
+        "nix-lefthook-tdd-order-bats-src": "nix-lefthook-tdd-order-bats-src",
         "nix-lefthook-trailing-whitespace-src": "nix-lefthook-trailing-whitespace-src",
         "nix-lefthook-typos-src": "nix-lefthook-typos-src",
         "nix-lefthook-unicode-lint-src": "nix-lefthook-unicode-lint-src",
@@ -566,11 +583,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787473138,
-        "narHash": "sha256-2CmwNk3s+hT/BJfpvTSF48rsSbKApHWwtGjo3SnOBbw=",
+        "lastModified": 1787809351,
+        "narHash": "sha256-ylc2LHg18W2YgfAZZC6ASMrsWgCLXkU4LDVCcEtiiWA=",
         "owner": "pr0d1r2",
         "repo": "set-and-setting",
-        "rev": "07884c5a7acac1ba6b41330722a80dff678b4f4b",
+        "rev": "3ed1bc4448711422f2c30b9fc89969df997dd05e",
         "type": "github"
       },
       "original": {

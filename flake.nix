@@ -29,6 +29,7 @@
         "nix"
         "shell"
         "ascii"
+        "bats"
         "markdown"
         "yaml"
       ];
