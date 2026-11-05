@@ -64,13 +64,18 @@ runs:
       shell: bash
       run: |
         sudo apt-get update -q
-        # Ubuntu 26.04 made qemu-user-static a virtual package; apt refuses
-        # to pick a provider. qemu-user-binfmt ships the static binaries and
-        # registers them. Older images still have the real package.
-        if apt-cache show qemu-user-binfmt >/dev/null 2>&1; then
-          sudo apt-get install -yq qemu-user-binfmt
-        else
+        # Prefer qemu-user-static wherever it is a real, installable package
+        # (Ubuntu <= 24.04): its static interpreters register with the F flag
+        # Nix's sandbox needs. On older images qemu-user-binfmt exists too but
+        # registers dynamic interpreters without F, so a mere existence check
+        # is not enough. Ubuntu 26.04 turned qemu-user-static into a virtual
+        # package with no candidate; there qemu-user-binfmt ships the static
+        # interpreters.
+        candidate=$(apt-cache policy qemu-user-static | awk '/Candidate:/ {print $2}')
+        if [ -n "$candidate" ] && [ "$candidate" != "(none)" ]; then
           sudo apt-get install -yq qemu-user-static binfmt-support
+        else
+          sudo apt-get install -yq qemu-user-binfmt
         fi
         for platform in ${{ inputs.extra-platforms }}; do
           arch="${platform%%-*}"
