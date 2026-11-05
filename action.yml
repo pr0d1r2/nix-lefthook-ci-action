@@ -75,13 +75,30 @@ runs:
         if [ -n "$candidate" ] && [ "$candidate" != "(none)" ]; then
           sudo apt-get install -yq qemu-user-static binfmt-support
         else
-          sudo apt-get install -yq qemu-user-binfmt
+          # Stay on the HWE virtualization stack when a runner already has
+          # it; installing the base package would replace that stack.
+          pkg=qemu-user-binfmt
+          if dpkg-query -W -f='${Package} ${Status}\n' 'qemu*-hwe' 2>/dev/null |
+            grep -q ' install ok installed$'; then
+            pkg=qemu-user-binfmt-hwe
+          fi
+          sudo apt-get install -yq "$pkg"
+          # Install is a no-op when the package is already present; re-apply
+          # /usr/lib/binfmt.d so a disabled handler gets registered again.
+          sudo systemctl restart systemd-binfmt
         fi
         for platform in ${{ inputs.extra-platforms }}; do
           arch="${platform%%-*}"
           sudo update-binfmts --enable "qemu-${arch}" 2>/dev/null || true
-          # Nix sandbox needs the F (fix-binary) flag; print it for diagnosis.
-          cat "/proc/sys/fs/binfmt_misc/qemu-${arch}" || true
+          handler="/proc/sys/fs/binfmt_misc/qemu-${arch}"
+          cat "$handler" || true
+          # Nix's sandbox can only run foreign binaries through an enabled
+          # handler with the F (fix-binary) flag; fail here, not mid-build.
+          if ! grep -qx enabled "$handler" 2>/dev/null ||
+            ! grep -Eq '^flags: [A-Z]*F' "$handler"; then
+            echo "::error::qemu-${arch} binfmt handler missing, disabled, or lacks the F flag"
+            exit 1
+          fi
         done
 
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
