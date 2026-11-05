@@ -71,7 +71,7 @@ runs:
         # is not enough. Ubuntu 26.04 turned qemu-user-static into a virtual
         # package with no candidate; there qemu-user-binfmt ships the static
         # interpreters.
-        candidate=$(apt-cache policy qemu-user-static | awk '/Candidate:/ {print $2}')
+        candidate=$(LC_ALL=C apt-cache policy qemu-user-static | awk '/Candidate:/ {print $2}')
         if [ -n "$candidate" ] && [ "$candidate" != "(none)" ]; then
           sudo apt-get install -yq qemu-user-static binfmt-support
         else
