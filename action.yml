@@ -83,8 +83,8 @@ runs:
             pkg=qemu-user-binfmt-hwe
           fi
           sudo apt-get install -yq "$pkg"
-          binfmt_d=1
         fi
+        host_arch=$(uname -m)
         for platform in ${{ inputs.extra-platforms }}; do
           # Nix system names are not QEMU handler names (armv7l-linux is
           # qemu-arm); map before enabling and checking.
@@ -94,13 +94,22 @@ runs:
             powerpc64le) arch=ppc64le ;;
             *) arch="${platform%%-*}" ;;
           esac
-          if [ -n "${binfmt_d:-}" ]; then
+          # The host runs its own arch, and i386 on x86_64, without QEMU;
+          # Ubuntu registers no handler for those, so there is nothing to check.
+          if [ "$arch" = "$host_arch" ] ||
+            { [ "$host_arch" = x86_64 ] && [ "$arch" = i386 ]; }; then
+            continue
+          fi
+          conf="/usr/lib/binfmt.d/qemu-${arch}.conf"
+          if [ -f "$conf" ]; then
             # Install is a no-op when the package is already present, so a
             # disabled handler stays disabled. Re-apply only this handler's
-            # binfmt.d file; restarting systemd-binfmt would drop unrelated
-            # registrations made by earlier steps.
-            sudo /usr/lib/systemd/systemd-binfmt "/usr/lib/binfmt.d/qemu-${arch}.conf" || true
+            # binfmt.d file (shipped by qemu-user-binfmt and by
+            # qemu-user-static on 24.04); restarting systemd-binfmt would drop
+            # unrelated registrations made by earlier steps.
+            sudo /usr/lib/systemd/systemd-binfmt "$conf" || true
           else
+            # Older packages register through the binfmt-support database.
             sudo update-binfmts --enable "qemu-${arch}" 2>/dev/null || true
           fi
           handler="/proc/sys/fs/binfmt_misc/qemu-${arch}"
