@@ -64,10 +64,19 @@ runs:
       shell: bash
       run: |
         sudo apt-get update -q
-        sudo apt-get install -yq qemu-user-static binfmt-support
+        # Ubuntu 26.04 made qemu-user-static a virtual package; apt refuses
+        # to pick a provider. qemu-user-binfmt ships the static binaries and
+        # registers them. Older images still have the real package.
+        if apt-cache show qemu-user-binfmt >/dev/null 2>&1; then
+          sudo apt-get install -yq qemu-user-binfmt
+        else
+          sudo apt-get install -yq qemu-user-static binfmt-support
+        fi
         for platform in ${{ inputs.extra-platforms }}; do
           arch="${platform%%-*}"
           sudo update-binfmts --enable "qemu-${arch}" 2>/dev/null || true
+          # Nix sandbox needs the F (fix-binary) flag; print it for diagnosis.
+          cat "/proc/sys/fs/binfmt_misc/qemu-${arch}" || true
         done
 
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
