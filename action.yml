@@ -76,20 +76,33 @@ runs:
           sudo apt-get install -yq qemu-user-static binfmt-support
         else
           # Stay on the HWE virtualization stack when a runner already has
-          # it; installing the base package would replace that stack.
+          # it (marker: ubuntu-virt-hwe); installing the base package would
+          # pull in ubuntu-virt and replace that stack.
           pkg=qemu-user-binfmt
-          if dpkg-query -W -f='${Package} ${Status}\n' 'qemu*-hwe' 2>/dev/null |
-            grep -q ' install ok installed$'; then
+          if [ "$(dpkg-query -W -f='${Status}' ubuntu-virt-hwe 2>/dev/null)" = "install ok installed" ]; then
             pkg=qemu-user-binfmt-hwe
           fi
           sudo apt-get install -yq "$pkg"
-          # Install is a no-op when the package is already present; re-apply
-          # /usr/lib/binfmt.d so a disabled handler gets registered again.
-          sudo systemctl restart systemd-binfmt
+          binfmt_d=1
         fi
         for platform in ${{ inputs.extra-platforms }}; do
-          arch="${platform%%-*}"
-          sudo update-binfmts --enable "qemu-${arch}" 2>/dev/null || true
+          # Nix system names are not QEMU handler names (armv7l-linux is
+          # qemu-arm); map before enabling and checking.
+          case "${platform%%-*}" in
+            armv7l | armv6l) arch=arm ;;
+            i686) arch=i386 ;;
+            powerpc64le) arch=ppc64le ;;
+            *) arch="${platform%%-*}" ;;
+          esac
+          if [ -n "${binfmt_d:-}" ]; then
+            # Install is a no-op when the package is already present, so a
+            # disabled handler stays disabled. Re-apply only this handler's
+            # binfmt.d file; restarting systemd-binfmt would drop unrelated
+            # registrations made by earlier steps.
+            sudo /usr/lib/systemd/systemd-binfmt "/usr/lib/binfmt.d/qemu-${arch}.conf" || true
+          else
+            sudo update-binfmts --enable "qemu-${arch}" 2>/dev/null || true
+          fi
           handler="/proc/sys/fs/binfmt_misc/qemu-${arch}"
           cat "$handler" || true
           # Nix's sandbox can only run foreign binaries through an enabled
