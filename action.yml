@@ -91,6 +91,8 @@ runs:
           case "${platform%%-*}" in
             armv7l | armv6l) arch=arm ;;
             i686) arch=i386 ;;
+            powerpc) arch=ppc ;;
+            powerpc64) arch=ppc64 ;;
             powerpc64le) arch=ppc64le ;;
             *) arch="${platform%%-*}" ;;
           esac
@@ -100,8 +102,16 @@ runs:
             { [ "$host_arch" = x86_64 ] && [ "$arch" = i386 ]; }; then
             continue
           fi
-          conf="/usr/lib/binfmt.d/qemu-${arch}.conf"
-          if [ -f "$conf" ]; then
+          # Enabled configs live in /usr/lib/binfmt.d; some packages only ship
+          # them under /usr/share/qemu/binfmt.d.
+          conf=""
+          for dir in /usr/lib/binfmt.d /usr/share/qemu/binfmt.d; do
+            if [ -f "$dir/qemu-${arch}.conf" ]; then
+              conf="$dir/qemu-${arch}.conf"
+              break
+            fi
+          done
+          if [ -n "$conf" ]; then
             # Install is a no-op when the package is already present, so a
             # disabled handler stays disabled. Re-apply only this handler's
             # binfmt.d file (shipped by qemu-user-binfmt and by
