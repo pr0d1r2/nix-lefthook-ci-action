@@ -84,18 +84,21 @@ runs:
           fi
           sudo apt-get install -yq "$pkg"
         fi
-        host_arch=$(uname -m)
-        for platform in ${{ inputs.extra-platforms }}; do
-          # Nix system names are not QEMU handler names (armv7l-linux is
-          # qemu-arm); map before enabling and checking.
-          case "${platform%%-*}" in
-            armv7l | armv6l) arch=arm ;;
-            i686) arch=i386 ;;
-            powerpc) arch=ppc ;;
-            powerpc64) arch=ppc64 ;;
-            powerpc64le) arch=ppc64le ;;
-            *) arch="${platform%%-*}" ;;
+        # Nix system names and uname -m are not QEMU handler names
+        # (armv7l-linux is qemu-arm); map both the same way.
+        qemu_arch() {
+          case "$1" in
+            armv7l | armv6l) echo arm ;;
+            i686) echo i386 ;;
+            powerpc) echo ppc ;;
+            powerpc64) echo ppc64 ;;
+            powerpc64le) echo ppc64le ;;
+            *) echo "$1" ;;
           esac
+        }
+        host_arch=$(qemu_arch "$(uname -m)")
+        for platform in ${{ inputs.extra-platforms }}; do
+          arch=$(qemu_arch "${platform%%-*}")
           # The host runs its own arch, and i386 on x86_64, without QEMU;
           # Ubuntu registers no handler for those, so there is nothing to check.
           if [ "$arch" = "$host_arch" ] ||
