@@ -24,5 +24,5 @@ setup() {
 
 @test "flake.lock does not pin the nixpkgs rev with brotli CVE-2026-111497" {
     run grep -F 'c508844df6c28fa6dabc1b6af70f3ccbd65c5201' "$REPO_ROOT/flake.lock"
-    [ "$status" -ne 0 ]
+    [ "$status" -eq 1 ]
 }
